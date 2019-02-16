@@ -1,5 +1,7 @@
 ##1. 1-Initial-Database-Setup-With-Seeding
 
+Let's begin by reviewing the most minimal requirements for a forum. If you think about it, we couldn't possibly construct a forum without users, threads, and replies. So let's tackle those first.
+
 ### Forum
 1. Thread
 2. Reply
@@ -36,6 +38,9 @@ $threads->each(function ($thread) { factory('App\Reply', 10)->create(['thread_id
 Отлично! Конец первого урока.
 
 ##2-Test-Driving-Threads
+
+Now that we have our seed data in place, we can move on to our first small feature: "a user should be able to read threads." Simple enough! We'll start with a basic test, and then scaffold the necessary views to make it pass.
+
 Дополнительная литература:
 - https://phpunit.readthedocs.io/ru/latest/index.html
 - https://leanpub.com/u/lex111
@@ -60,3 +65,16 @@ php artisan make:auth
     {{ $thread->title}}
 </a>
 ``
+## 3. A Thread Can Have Replies
+
+Now that we've added a basic feature for users to read forum threads, we can next move on to viewing all replies associated with each thread. As before, we'll start with a test to describe our desired outcome.
+
+Сделали в тесте функцию `setUp` и вынесли туда повторяющийся код.
+
+Дописываем view вывода Replies. Thread добавляем связь один-ко-многим с Reply.
+Делаем красивый вывод даты написания Reply.
+
+Создадим новый тест:
+php artisan make:test ReplyTest --unit
+
+...и дорабатываем внешний вид страницы Поста с Ответами.
