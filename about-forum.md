@@ -78,3 +78,33 @@ Now that we've added a basic feature for users to read forum threads, we can nex
 php artisan make:test ReplyTest --unit
 
 ...и дорабатываем внешний вид страницы Поста с Ответами.
+
+## 4-A-User-May-Response-To-Threads
+Сначала рефакторинг:
+- выносим кусок Комментариев в reply.blade.php, код становится чище;
+
+Добавляем тест:
+- Пост имеет пользователя создателя;
+- App\Thread добавляем метод creator()
+
+Запуск теста одного метода (все очень долго):
+./vendor/bin/phpunit --filter test_a_thread_has_a_creator
+
+После того, как написали тест, добавляем в шаблон вывод создателя статьи:
+<a href="#">{{ $thread->creator->name }}</a> posted:
+
+OK!!!
+
+Переходим к новому тесту:
+php artisan make:test ParticipateInForum
+
+Handler.php добавляем для избегания ошибок:
+if (app()->environment() === 'testing') throw $exception;
+
+Добавляем web.php -> post route
+Добавляем RepliesController
+
+Добавляем в модели Reply, Thread. Чтобы без ошибки добавлялись поля в методе addReply()
+protected $guarded = [];
+
+Тесты работают!
