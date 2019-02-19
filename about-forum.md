@@ -108,3 +108,12 @@ if (app()->environment() === 'testing') throw $exception;
 protected $guarded = [];
 
 Тесты работают!
+
+## 5 The Reply Form
+Now that we've tested the end-point for adding a new reply, the only remaining step is to create the HTML for the form. In the process, we'll also ensure that only logged-in users are able to see it.
+
+Если пользователь авторизован, выводим форму добавления Reply.
+@if (auth()->check())
+И регистрируемся.
+
+Теперь добавим в навигации ссылку на посты и лого.
