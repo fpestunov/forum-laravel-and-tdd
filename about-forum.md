@@ -117,3 +117,29 @@ Now that we've tested the end-point for adding a new reply, the only remaining s
 И регистрируемся.
 
 Теперь добавим в навигации ссылку на посты и лого.
+
+## A User May Publish Threads
+
+So far, a user can read and reply to threads, but they don't yet have the ability to publish their own threads. Let's begin fixing that in this episode.
+
+Пользователи могут не только читать, но и создавать Посты.
+php artisan make:test CreateThreadsTest
+- используем actingAs() vs be()
+- в фабриках пишем make() или raw(), в первом случае конвертируем в массив toArray()
+
+Как работает фабрика?
+php artisan tinker
+factory('App\User')->make();
+factory('App\User')->raw();
+
+При написании метода store() в контроллере Threads, запускаем локальное тестирование... А что приходит?
+public function store(Request $request)
+{
+    dd($request->all());
+}
+
+Работает! Теперь сделаем тест - неавторизованные не могут добавлять Посты.
+- пишем тест
+- пишем код:
+    В контроллер добавляем ограничение.
+    $this->middleware('auth')->only('store');
