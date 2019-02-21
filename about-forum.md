@@ -143,3 +143,19 @@ public function store(Request $request)
 - пишем код:
     В контроллер добавляем ограничение.
     $this->middleware('auth')->only('store');
+
+## 7. Let's Make Some Testing Helpers
+
+I'm a big fan of making the process of writing tests as natural as humanly possible. The harder it is to construct a test, the more likely it is that you simply...won't. With that in mind, let's extract a few helpers and snippets to assist us.
+
+Начинаем создание хелпера:
+- делаем в композере запись, чтобы файл в Деве загружался автоматически: 
+"autoload-dev": { "files": ["tests/utilities/functions.php"] }
+- пишем функции-хелперы в файле tests/utilities/functions.php
+- исправляем файл с тестами
+- делаем composer dump-autoload
+- проверяем тесты, ОК!
+
+Теперь надо упростить создание нового пользователя:
+- было - $this->actingAs(create('App\User'));
+- надо - $this->signIn(), для этого пишем метод в TestCase.php (потому что CreateThreadsTest extends TestCase) и остальные тестовые классы будут "расширяться" от него;
