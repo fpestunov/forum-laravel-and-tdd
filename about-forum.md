@@ -159,3 +159,21 @@ I'm a big fan of making the process of writing tests as natural as humanly possi
 Теперь надо упростить создание нового пользователя:
 - было - $this->actingAs(create('App\User'));
 - надо - $this->signIn(), для этого пишем метод в TestCase.php (потому что CreateThreadsTest extends TestCase) и остальные тестовые классы будут "расширяться" от него;
+
+## 8. The Exception Handling Conundrum
+
+Now that our endpoint tests are returning green, we can construct the HTML form to publish a new thread. However, in the process, we'll stumble upon an odd exception handling issue that needs to be addressed. Luckily, Adam Wathan has a useful solution that we can implement.
+
+a) web.php, много роутов у постов, а это значит надо сделать resource controller
+Проверяем тесты... работают!
+
+б) добавим страницу добавления постов и в контроллере поставим ограничение доступа к странице:
+$this->middleware('auth')->only(['create', 'store']);
+лучше так, потому что там много других экшнэв, кт не должны быть доступны другим
+$this->middleware('auth')->except(['index', 'show']);
+
+в) напишем тест, Гость не может видеть страницу добавления поста;
+exception error, так... лечим рецептом Адама Воттана
+https://gist.github.com/adamwathan/125847c7e3f16b88fa33a9f8b42333da
+все тесты работают!!!
+
