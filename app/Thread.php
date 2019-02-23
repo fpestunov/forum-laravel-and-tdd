@@ -11,7 +11,8 @@ class Thread extends Model
 
     public function path()
     {
-        return "/threads/" . $this->id;
+        // return "/threads/" . $this->channel->slug . '/' . $this->id;
+        return "/threads/{$this->channel->slug}/{$this->id}"; // так чище
     }
 
     public function replies()
@@ -24,6 +25,11 @@ class Thread extends Model
         return $this->belongsTo(User::class, 'user_id');
         // указываем user_id, потому что он будет искать по
         // умолчанию по имени метода -  creator_id
+    }
+
+    public function channel()
+    {
+        return $this->belongsTo(Channel::class);
     }
 
     public function addReply($reply)

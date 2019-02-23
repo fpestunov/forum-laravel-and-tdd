@@ -18,6 +18,16 @@ class ThreadsTest extends TestCase
 
         $this->thread = factory('App\Thread')->create();
     }
+
+    public function test_a_thread_can_make_a_string_path()
+    {
+        $thread = create('App\Thread');
+        // $this->assertEquals('/threads/' . $thread->channel->slug . '/' . $thread->id, $thread->path());
+        $this->assertEquals(
+            "/threads/{$thread->channel->slug}/{$thread->id}", $thread->path()
+        ); // так чище
+    }
+
     public function test_a_user_can_browse_threads()
     {
         $response = $this->get('/threads');
@@ -32,7 +42,7 @@ class ThreadsTest extends TestCase
 
     public function test_a_user_can_read_a_single_thread()
     {
-        $response = $this->get('/threads/' .$this->thread->id);
+        $response = $this->get("/threads/{$this->thread->channel->slug}/" .$this->thread->id);
         $response->assertSee($this->thread->title);
     }    
 
@@ -48,7 +58,7 @@ class ThreadsTest extends TestCase
         // $response = $this->get('/threads/' .$this->thread->id);
 
         // Then we should see the replies 
-        $this->get('/threads/' .$this->thread->id)
+        $this->get("/threads/{$this->thread->channel->slug}/" . $this->thread->id)
             ->assertSee($reply->body);
 
 
@@ -69,4 +79,10 @@ class ThreadsTest extends TestCase
         $this->assertCount(1, $this->thread->replies);
     }
 
+    public function test_a_thread_belongs_to_a_channel()
+    {
+        $thread = create('App\Thread');
+
+        $this->assertInstanceOf('App\Channel', $thread->channel);
+    }
 }

@@ -160,7 +160,7 @@ I'm a big fan of making the process of writing tests as natural as humanly possi
 - было - $this->actingAs(create('App\User'));
 - надо - $this->signIn(), для этого пишем метод в TestCase.php (потому что CreateThreadsTest extends TestCase) и остальные тестовые классы будут "расширяться" от него;
 
-## 8. The Exception Handling Conundrum
+## 8. The Exception Handling Conundrum (проблема/загадка/головоломка)
 
 Now that our endpoint tests are returning green, we can construct the HTML form to publish a new thread. However, in the process, we'll stumble upon an odd exception handling issue that needs to be addressed. Luckily, Adam Wathan has a useful solution that we can implement.
 
@@ -177,3 +177,41 @@ exception error, так... лечим рецептом Адама Воттана
 https://gist.github.com/adamwathan/125847c7e3f16b88fa33a9f8b42333da
 все тесты работают!!!
 
+## 9. A Thread Should Be Assigned a Channel
+
+Right now, all threads are thrown into the same "global" namespace, so to speak. Ideally, we should assign each thread to a channel. That way, for a development forum, we may easily filter threads by PHP, or JavaScript, or Servers.
+
+Прежде чем начнем, сделаем рефакторинг. Два похожих метода в CreateThreadsTest:
+- test_guests_may_not_create_threads()
+- test_guests_cannot_see_the_create_thread_page()
+
+Объеденим их в один. Стало намного красивее (сравни в гите ветки). Запускаем тест:
+./vendor/bin/phpunit --filter CreateThreadsTest
+
+Возвращаемся к теме каналов. Пишем в Unit/ThreadTest.php новый тест test_a_thread_belongs_to_a_channel() и запускаем тест (ТДД):
+./vendor/bin/phpunit --filter CreateThreadsTest test_a_thread_belongs_to_a_channel
+
+Получаем ошибку и создаем модель с миграцией:
+php artisan make:model Channel -m
+./vendor/bin/phpunit --filter CreateThreadsTest test_a_thread_belongs_to_a_channel
+
+Опять ошибка. В модели Thread создаем связь с Channel. И в таблице миграций Постов добавляем связь с таблицей Каналов. И в фабрику добавляем генерацию channel_id и генерацию самих каналов Channels.
+
+Ключевые поля не могут принимать отрицательные значения:
+- $table->integer('user_id'); // положительные и отрицательные
+- $table->unsignedInteger('user_id'); // только положительные
+
+Теперь тест работает!!! Но не работают остальные, т.к. добавили в Посты Каналы :) Правим...
+
+Теперь надо сделать чтобы УРЛ был такого формата:
+/threads/channel/2
+
+Подправляем ошибки, запускаем тесты, ок!!!
+
+
+Теперь надо сделать миграцию для локальной разработки:
+php artisan migrate:refresh
+
+Теперь надо заполнить базу данными:
+php artisan tinker
+factory('App\Thread', 50)->create();
