@@ -215,3 +215,55 @@ php artisan migrate:refresh
 Теперь надо заполнить базу данными:
 php artisan tinker
 factory('App\Thread', 50)->create();
+
+## 10 How to Test Validation Errors
+
+We haven't written any validation logic yet for our forum. This means that a user could whip up a request with all sorts of invalid data, and we'd gladly persist it to the database. Let's fix that in this episode, while writing tests to ensure that everything functions as we expect.
+
+### Сначала исправим логическую ошибку
+Куда идет редирект?
+```
+$response = $this->post('/threads', $thread->toArray());
+dd($response->headers->get('Location'));
+```
+
+Переписываем метод `test_an_authenticated_user_can_create_new_forum_thread()`, потому что там ошибка в логике.
+
+### Приступим к валидации
+
+ThreadsController мы просто добавляем новый тест без какой либо проверки. Исправим это.
+
+Напишем тест:
+test_a_thread_requires_a_title()
+
+Напишем в контроллере валидацию:
+```
+$this->validate($request, [
+    'title' => 'required'
+]);
+```
+
+./vendor/bin/phpunit --filter test_a_thread_requires_a_title
+There was 1 error:
+1) Tests\Feature\CreateThreadsTest::test_a_thread_requires_a_title
+Illuminate\Validation\ValidationException: The given data was invalid.
+
+Ошибка! Переписываем вход пользователя с эксэпшн:
+$this->withExceptionHandling()->signIn();
+
+Сделаем рефакторинг - чисто и удобно:
+$this->publishThread(['title' => null])
+    ->assertSessionHasErrors('title');
+
+Добавляем тестирование:
+- body
+- channel - не только заполнено, но и валидное (проверить наличие)!
+
+Хорошо, теперь сделаем валидацию для Ответов к Постам.
+./vendor/bin/phpunit --filter test_a_reply_requires_a_body
+There was 1 failure:
+1) Tests\Feature\ParticipateInForum::test_a_reply_requires_a_body
+Session is missing expected key [errors].
+Failed asserting that false is true.
+
+Делаем валидацию в контроллере Ответов. Работает! :)

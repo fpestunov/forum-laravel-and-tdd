@@ -14,6 +14,9 @@ class RepliesController extends Controller
 
     public function store($channelId, Thread $thread)
     {
+        $this->validate(request(), [
+            'body' => 'required',
+        ]);        
         // что мы делаем? Добавляем Reply to Thread
         // добавляем Thread
 
