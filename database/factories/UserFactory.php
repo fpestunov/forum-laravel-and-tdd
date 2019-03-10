@@ -45,6 +45,7 @@ $factory->define(App\Channel::class, function (Faker $faker) {
         'slug' => $name
     ];
 });
+
 $factory->define(App\Reply::class, function (Faker $faker) {
     return [
         'thread_id' => function () {

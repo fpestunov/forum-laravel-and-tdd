@@ -267,3 +267,50 @@ Session is missing expected key [errors].
 Failed asserting that false is true.
 
 Делаем валидацию в контроллере Ответов. Работает! :)
+
+## 11 Users Can Filter Threads By Channel
+
+Now that we've associated all threads with a channel, we can now perform the necessary UI updates to allow users to filter threads by their desired channel.
+
+/thread/channel/id
+/thread/channel - надо сделать вывод всех постов этого Channel
+
+Сделаем алиасы:
+alias p
+p = phpunit
+alias pf
+pf = 'phpunit --filter'
+
+Пишем тест:
+test_a_user_can_filter_threads_according_to_a_tag()
+
+Создаем роут для теста (обратим внимание, что у нас есть похожий роут):
+Route::get('threads/{channel}', ThreadsController@index);
+
+В связи с этим модернизируем метод ThreadsController@index().
+
+Запускаем тест:
+`pf test_a_user_can_filter_threads_according_to_a_tag`
+
+Переписываем в контроллере метод index().
+
+Добавляем в модель App\Channel метод getRouteKeyName() с return 'slug'.
+
+Создадим tests\Unit\ChannelTest.php. Ошибка...
+
+Добавляем в модель App\Channel метод threads().
+
+Все готово, теперь починим глобальные ошибки:
+```
+CreateThreadsTest/test_guests_may_not_create_threads()
+        $this->get('/threads/create')
+            ->assertRedirect('/login');
+```
+Надо переместить роуты в файле web.php
+
+Теперь сделаем в меню форума вывод Каналов (файл `app.blade.php`).
+```
+@foreach (App\Channel::all() as $channel)
+    <a class="dropdown-item" href="/threads/{{ $channel->slug }}">{{ $channel->name }}</a>
+@endforeach
+```

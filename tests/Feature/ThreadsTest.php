@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-// use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ThreadsTest extends TestCase
@@ -84,5 +83,19 @@ class ThreadsTest extends TestCase
         $thread = create('App\Thread');
 
         $this->assertInstanceOf('App\Channel', $thread->channel);
+    }
+
+    public function test_a_user_can_filter_threads_according_to_a_channel()
+    {
+        $this->withExceptionHandling();
+
+        $channel = create('App\Channel');
+        $threadInChannel = create('App\Thread', ['channel_id' => $channel->id]);
+        $threadNotInChannel = create('App\Thread');
+
+        $this->get('/threads/' . $channel->slug)
+            ->assertSee($threadInChannel->title)
+            ->assertDontSee($threadNotInChannel->title);
+
     }
 }
