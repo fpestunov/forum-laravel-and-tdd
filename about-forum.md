@@ -314,3 +314,19 @@ CreateThreadsTest/test_guests_may_not_create_threads()
     <a class="dropdown-item" href="/threads/{{ $channel->slug }}">{{ $channel->name }}</a>
 @endforeach
 ```
+
+## 12. Validation Errors and Old Data
+
+In this episode, we need to do a bit of work on the "create thread" page. We'll first add a link to the navigation bar, and then move on to tweaking the form, itself. Specifically, we should provide validation error feedback, and ensure that any text that the user types into the form's various fields will be remembered if a validation error is triggered.
+
+Нам надо добавить новый пост.
+- добавим ссылку "Новый пост" в меню;
+- не создаются? почему, сделаем dd('here') для теста... не доходит... ошибка валидации
+
+Делаем доработку нашей формы:
+- helper function { old('title') }
+- emmet 'ul.alert.alert-danger>li'
+- ul.alert.alert-danger>li
+
+Добавление работает!
+
