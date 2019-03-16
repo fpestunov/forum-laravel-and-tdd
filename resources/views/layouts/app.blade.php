@@ -36,6 +36,11 @@
                           <li class="nav-item active">
                             <a class="nav-link" href="/threads">Threads</a>
                           </li>
+                          @if (auth()->check())
+                              <li class="nav-item active">
+                                <a class="nav-link" href="/threads?by={{ auth()->user()->name }}">My Threads</a>
+                              </li>
+                          @endif
                           <li class="nav-item active">
                             <a class="nav-link" href="/threads/create">New Thread</a>
                           </li>

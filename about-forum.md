@@ -330,3 +330,38 @@ In this episode, we need to do a bit of work on the "create thread" page. We'll 
 
 Добавление работает!
 
+## 13. Extracting to View Composers
+
+Currently, we have two different SQL queries for fetching all channels directly in our view layer. Let's fix that by extracting a dedicated view composer.
+
+Во вьюшке создания поста мы `@foreach (App\Channel::all() as $channel)` обращаемся к данным через модель `App\Channel::all()`. Давайте вынесем этот код и оставим `@foreach ($channels as $channel)`.
+
+В меню layouts страниц тоже запрос на получение каналов. Перепишем...
+
+На странице создания работает, а на остальных ошибка. Сделаем *$channels* в *AppServiceProvider* для всех страниц:
+```
+\View::composer('threads.create', function ($view) {
+\View::composer('*', function ($view) {
+```
+или еще короче:
+```
+\View::share('channels', \App\Channel::all());
+```
+или можно создать *ViewServiceProvider* и поместить туда.
+
+## 14. A User Can Filter All Threads By Username
+
+It would be nice if any user could have a link that displays only the threads that they've personally created. Even beyond that, why not allow for the ability to view any forum user's threads? Let's figure out how in this episode.
+
+Как посмотреть посты созданные мной?
+
+Сделаем для такого запроса /threads/?byuser=JohnDoe
+
+Начнем с тестов. Написали. Проверяем... ошибка из-за СервисПровайдера с Channels. Исправляем.
+
+Запускаем тест - ошибка. Исправляем ThreadsController@index(). Заработало!
+
+Меняем меню навигации. Добавляем "Мои посты".
+
+Все тесты проходим.
+
